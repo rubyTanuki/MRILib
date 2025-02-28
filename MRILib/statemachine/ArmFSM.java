@@ -1,8 +1,3 @@
-package MRILib.statemachine;
-
-import org.firstinspires.ftc.teamcode.*;
-import com.qualcomm.robotcore.hardware.Gamepad;
-import java.util.HashMap;
 
 /*
  * This file contains the finite state machine for controlling your robot's arm with states and transitions
@@ -21,24 +16,40 @@ import java.util.HashMap;
  * You can also make a manager class for both state machines that will call setState on both classes at once for QOL and readability
  */
 
+
+package MRILib.statemachine;
+
+import org.firstinspires.ftc.teamcode.*;
+import com.qualcomm.robotcore.hardware.Gamepad;
+import java.util.HashMap;
+
+
 public class ArmFSM
 {
-    private ArmBot bot;
-    private BotState currentState;
+    //opmode member manager
+    private ArmBot bot; 
 
+    //currently active state
+    private BotState currentState; 
+
+    //constructor
     public Arm_FSM(ArmBot bot){
         this.bot = bot;
         init();
         currentState = BotState.get("DEFAULT"); //starting on default state
     }
 
-    public void start(){
+
+    public void start()
+    { // runs once at the state's initialization
         currentState.start(); 
     }
-    public void update(){
+    public void update()
+    { // runs every repeat loop on the main thread
         currentState.update(); 
     }
-    public void end(){
+    public void end()
+    { // runs once at the end of the state or before transitioning to another state
         currentState.end(); 
     }
 
@@ -61,7 +72,7 @@ public class ArmFSM
         HashMap<String, Boolean> transitions = currentState.getTransitions();
         for(String targetState : transitions.keySet()){
             if(transitions.get(targetState)){
-                setCurrentState(targetState);
+                setState(targetState);
                 break;
             }
         }
