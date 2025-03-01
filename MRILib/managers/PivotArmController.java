@@ -5,7 +5,7 @@ import static MRILib.BotValues.*;
 
 
 public class PivotArmController implements Runnable{
-    private ArmBot bot;
+    private ArmBotFF bot;
 
 
     private final double k1 = 10.0; //LQR gain 1
@@ -23,7 +23,7 @@ public class PivotArmController implements Runnable{
 
     private volatile boolean running = true;
 
-    public PivotArmController(ArmBot bot){
+    public PivotArmController(ArmBotFF bot){
         //constructor
         this.bot = bot;
     }
@@ -71,17 +71,17 @@ public class PivotArmController implements Runnable{
         
     }
 
-    public double setMotorVoltage(double voltage){
+    public void setMotorVoltage(double voltage){
         //use voltage sensor to clamp volts to 0-12
         double clampMulti = 12.0/bot.getVoltage();
         //calculate 0-1 relative to current voltage output and the target voltage
         double powerValue = (1.0/voltage)*clampMulti;
 
         //apply power value to motor
-        bot.setPivotPower(powerValue);
+        bot.setPivot(powerValue);
     }
 
-    public void updateCurrentState(double armPos, double velocity){
+    public synchronized void updateCurrentState(double armPos, double velocity){
         previousArmTheta = currentArmTheta;
         previousArmAngularVelocity = currentArmAngularVelocity;
         currentArmTheta = Math.toRadians(armPos/TICKS_PER_DEGREE_ARM);
@@ -91,6 +91,7 @@ public class PivotArmController implements Runnable{
     public void setTargetTheta(double theta, AngleUnit unit){
         targetTheta = unit==AngleUnit.DEGREES?Math.toRadians(theta):theta;
     }
+
     public void stop(){
         running = false;
     }
