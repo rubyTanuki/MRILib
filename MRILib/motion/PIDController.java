@@ -6,6 +6,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.Range;
+
+import MRILib.managers.*;
 import Main.util.Mathf;
 import org.firstinspires.ftc.teamcode.*;
 
@@ -39,6 +41,11 @@ public class PIDController {
     public PIDController(Bot bot){
         this.bot = bot;
     }
+    public PIDController(ArmBotEasy bot){
+        this.bot = (Bot)bot;
+    }
+
+
     public void setPID(PID x, PID y){
         xPID = x;
         yPID = y;

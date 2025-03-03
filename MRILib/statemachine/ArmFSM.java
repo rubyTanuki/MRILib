@@ -14,6 +14,8 @@
  * For a robot with a transfer system, or multiple arms, I suggest creating multiple ArmFSM classes and seperating the logic between them,
  * as this allows for the easiest management of two seperate systems without making your state machines difficult to read and implement
  * You can also make a manager class for both state machines that will call setState on both classes at once for QOL and readability
+ * 
+ * to see an example of the intended usage of this class, see MRILib.opmodes.AutonExample
  */
 
 
@@ -32,9 +34,22 @@ public class ArmFSM
     //currently active state
     private BotState currentState; 
 
-    //constructor
-    public Arm_FSM(ArmBot bot){
+    //gamepads
+    Gamepad gpad1;
+    Gamepad gpad2;
+
+    // Constructor for Auton when gamepads are not needed
+    public ArmFSM(ArmBot bot){
         this.bot = bot;
+        init();
+        currentState = BotState.get("DEFAULT");
+    }
+
+    // Constructor for TeleOp to take in gamepads
+    public ArmFSM(ArmBot bot, Gamepad gpad1, Gamepad gpad2){
+        this.bot = bot;
+        this.gpad1 = gpad1;
+        this.gpad2 = gpad2;
         init();
         currentState = BotState.get("DEFAULT"); //starting on default state
     }
@@ -67,8 +82,12 @@ public class ArmFSM
         }
     }
 
+    /**
+     * Checks all transition conditions and transitions to the first valid target state.
+     * This method should be called in the update() method of each state.
+     */
     public void transition()
-    { // checks all transition conditions and transitions if any are true
+    {
         HashMap<String, Boolean> transitions = currentState.getTransitions();
         for(String targetState : transitions.keySet()){
             if(transitions.get(targetState)){

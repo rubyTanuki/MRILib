@@ -38,7 +38,7 @@ import org.firstinspires.ftc.teamcode.*;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import java.util.ArrayList;
 
-public class Drive_FSM
+public class DriveFSM
 {
     private Bot bot;
     private PIDController pid = null;
@@ -46,7 +46,7 @@ public class Drive_FSM
 
     public int currentStep = 0;
 
-    public Drive_FSM(Bot bot, PIDController pid){
+    public DriveFSM(Bot bot, PIDController pid){
         this.bot = bot;
         this.pid = pid;
     }
@@ -68,6 +68,7 @@ public class Drive_FSM
 
     public void nextState()
     { // transitioning to the next state once target condition is met
+        if (currentStep > steps.size()) return;
         end();
         currentStep++;
         start();
