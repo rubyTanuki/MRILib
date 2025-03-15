@@ -4,12 +4,12 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot.LogoFacingDirection;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot.UsbFacingDirection;
 
 public class BotValues{
-    public static DcMotor.Direction LEFTDIR = DcMotor.Direction.REVERSE;
-    public static DcMotor.Direction RIGHTDIR = DcMotor.Direction.FORWARD;
+    public static DcMotor.Direction LEFTDIR = DcMotor.Direction.FORWARD;
+    public static DcMotor.Direction RIGHTDIR = DcMotor.Direction.REVERSE;
     public static DcMotor.Direction SLIDEDIR = DcMotor.Direction.FORWARD;
     public static DcMotor.Direction PIVOTDIR = DcMotor.Direction.REVERSE;
-    public static LogoFacingDirection LOGO_DIR = LogoFacingDirection.LEFT;
-    public static UsbFacingDirection USB_DIR = UsbFacingDirection.UP;
+    public static LogoFacingDirection LOGO_DIR = LogoFacingDirection.UP;
+    public static UsbFacingDirection USB_DIR = UsbFacingDirection.LEFT;
 
     // define robot-specific motor/wheel constants
     public static final double TICKS_PER_REVOLUTION = 384.5; //384.5

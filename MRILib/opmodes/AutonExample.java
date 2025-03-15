@@ -4,15 +4,25 @@ import static MRILib.BotValues.*;
 import MRILib.managers.*;
 import MRILib.motion.*;
 import MRILib.statemachine.*;
+import java.util.*;
+
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 @Autonomous(name = "AutonExample")
 
 public class AutonExample extends LinearOpMode {
 
-    public ArmBotEasy bot;
+    //public ArmBotEasy bot;
+    public Bot bot;
     public PIDController pid;
     public DriveFSM dsm;
-    public ArmFSM asm;
+    //public ArmFSM asm;
     
     //make these your intended dropping position for buckets
     private static final double BUCKET_X = 55.5;
@@ -26,8 +36,9 @@ public class AutonExample extends LinearOpMode {
     //hardwaremaps and init methods
         
         
-        bot = new ArmBotEasy(hardwareMap);
-        asm = new ArmFSM(bot, gamepad1, gamepad2);
+        bot = new Bot(hardwareMap);
+        //bot = new ArmBotEasy(hardwareMap);
+        //asm = new ArmFSM(bot, gamepad1, gamepad2);
         
         bot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         bot.enableBrakeMode(true);
@@ -36,16 +47,16 @@ public class AutonExample extends LinearOpMode {
         // for reference of how to adjust these and what they represent, check out page 30 (chapter 2) of
         // this book: https://file.tavsys.net/control/controls-engineering-in-frc.pdf
         // github link for the book: https://github.com/calcmogul/controls-engineering-in-frc?tab=readme-ov-file
-        PID xPid = new PID(.12, .08, .02);// default = (.1,0.08,.01);
-
+        PID xPid = new PID(.7, .08, .02);// default = (.1,0.08,.01);
+        
         // yPid needs a bit more p because strafing is a bit slower than driving forward and back
-        PID yPid = new PID(.14, .08, .02);// default = (.12,0.08,.01);
+        PID yPid = new PID(.8, .08, .02);// default = (.12,0.08,.01);
 
         PID thetaPID = new PID(1.5,0.98,.09);// default = (2, 0.98, 0.08);
         thetaPID.errorSumTotal = .1;
 
 
-        pid = new PIDController(bot);
+        pid = new PIDController(bot, telemetry);
         
         pid.setPID(xPid, yPid);
         pid.setTurnPID(thetaPID);
@@ -101,7 +112,8 @@ public class AutonExample extends LinearOpMode {
 //loop
     //repeating while active
         while (opModeIsActive()) {
-
+            
+            //bot.getFR().setPower(.5);
             // localization with a webcam with autobot
             // comment out if using ArmBotFF or ArmBotEasy
             try{
@@ -139,9 +151,13 @@ public class AutonExample extends LinearOpMode {
             //displaying telemetry to the drivers hub
             telemetry.addData("Status", "Running");
             telemetry.addLine();
+            telemetry.addData("target Degrees", pid.getTargetRadians());
+            telemetry.addData("current Degrees", pid.getCurrentRadians());
+            telemetry.addData("target x", pid.getTargetX());
+            telemetry.addData("target y", pid.getTargetY());
             telemetry.addData("position x", currentPos.getX(DistanceUnit.INCH));
             telemetry.addData("position y", currentPos.getY(DistanceUnit.INCH));
-            telemetry.addData("heading", bot.getHeading());
+            telemetry.addData("heading", -bot.getHeading());
             telemetry.update();
             
             

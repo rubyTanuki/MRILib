@@ -104,19 +104,19 @@ public class ArmBotEasy extends Bot{
         claw.setPosition(pos);
     }
 
-    public void setPivot(double target){
+    public void setPivot(int target){
         pivot.setTargetPosition(target);
         pivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         pivot.setVelocity(6000);
     }
 
-    public void setSlides(double target){
+    public void setSlides(int target){
         slide.setTargetPosition(target);
         slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slide.setVelocity(6000);
     }
 
-    public void setArm(double pivotTarget, double slideTarget){
+    public void setArm(int pivotTarget, int slideTarget){
         setPivot(pivotTarget);
         setSlides(slideTarget);
     }

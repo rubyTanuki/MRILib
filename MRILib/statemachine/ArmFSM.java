@@ -21,37 +21,41 @@
 
 package MRILib.statemachine;
 
-import org.firstinspires.ftc.teamcode.*;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import java.util.HashMap;
+import MRILib.managers.*;
 
 
 public class ArmFSM
 {
     //opmode member manager
-    private ArmBot bot; 
+    private ArmBotEasy bot; 
 
     //currently active state
-    private BotState currentState; 
+    private ArmState currentState; 
 
     //gamepads
     Gamepad gpad1;
     Gamepad gpad2;
+    
+    boolean auton;
 
     // Constructor for Auton when gamepads are not needed
-    public ArmFSM(ArmBot bot){
+    public ArmFSM(ArmBotEasy bot){
+        auton = true;
         this.bot = bot;
         init();
-        currentState = BotState.get("DEFAULT");
+        currentState = ArmState.getState("DEFAULT");
     }
 
     // Constructor for TeleOp to take in gamepads
-    public ArmFSM(ArmBot bot, Gamepad gpad1, Gamepad gpad2){
+    public ArmFSM(ArmBotEasy bot, Gamepad gpad1, Gamepad gpad2){
+        auton = false;
         this.bot = bot;
         this.gpad1 = gpad1;
         this.gpad2 = gpad2;
         init();
-        currentState = BotState.get("DEFAULT"); //starting on default state
+        currentState = ArmState.getState("DEFAULT"); //starting on default state
     }
 
 
@@ -71,7 +75,7 @@ public class ArmFSM
 
     public void setState(String name)
     { // setting currentState to another saved state
-        setState(ArmState.get(name));
+        setState(ArmState.getState(name));
     }
     public void setState(ArmState state)
     { // setting currentState to another saved state
@@ -134,8 +138,8 @@ public class ArmFSM
 class ArmState extends BotState{
 
     // static hashmap with all initialized states
-    private static HashMap<String, BotState> states = new HashMap<>();
-    public static BotState get(String s)
+    private static HashMap<String, ArmState> states = new HashMap<>();
+    public static ArmState getState(String s)
     { // returning a previously saved state
         try {
             return states.get(s);    

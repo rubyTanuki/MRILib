@@ -34,7 +34,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.*;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import java.util.ArrayList;
 
@@ -109,7 +108,7 @@ public class DriveFSM
                 if(command!=null)command.run(); 
 
                 // Setting PID target position
-                pid.moveTo(tx,ty,tAngle); 
+                pid.moveTo(tx,ty,tAngle);
 
                 // Saving old values
                 lastX = tx;
@@ -125,7 +124,7 @@ public class DriveFSM
                 pid.update();
 
                 // Calculating distance from target position using odometry
-                Pose2D curPos = pid.odo.getPosition();
+                Pose2D curPos = bot.getPosition();
                 double deltaX = tx - curPos.getX(DistanceUnit.INCH);
                 double deltaY = ty - curPos.getY(DistanceUnit.INCH);
                 double deltaAngle = tAngle + curPos.getHeading(AngleUnit.DEGREES);

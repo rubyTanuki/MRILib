@@ -4,11 +4,16 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import MRILib.util.GoBildaPinpointDriver;
 import static MRILib.BotValues.*;
+
 
 /*
  * This file contains the initialization of the drive train motors, imu, 
@@ -109,9 +114,9 @@ public class Bot{
 
         // setting the init parameters of the two odometry wheels 
         // for refrence of how to determine these parameters, look to "ComputeOdo.java" in .util
-        odo.setOffsets(96.0, -75.0);
+        odo.setOffsets(96.0, 75.0);
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
-        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
         // resetting the position and heading to zero (this can be reset to a different starting position
         // using setPosition())
@@ -120,6 +125,7 @@ public class Bot{
 
     public void update(){
         //update robot position and encoder ticks in each opMode loop tick
+        odo.update();
         lastPosition = currentPosition;
         currentPosition = getOdoPosition();
         updateEncoders();
@@ -166,7 +172,7 @@ public class Bot{
     }
     public Pose2D getLastPosition(){
         // returning the odometry position as it was at the last update tick
-        return lastPosition();
+        return lastPosition;
     }
 
     private Pose2D getOdoPosition(){
@@ -174,18 +180,18 @@ public class Bot{
         // (this is private so that getPosition is used, which is properly synced with the update ticks)
         return odo.getPosition();
     }
-    public int getX(){
+    public double getX(){
         // returns the X value of the current odometry position
-        getPosition().getX(DistanceUnit.INCH);
+        return getPosition().getX(DistanceUnit.INCH);
     }
-    public int getY(){
+    public double getY(){
         // returns the Y value of the current odometry position
-        getPosition().getY(DistanceUnit.INCH);
+        return getPosition().getY(DistanceUnit.INCH);
     }
     public double getHeading(){
         // returns the heading value of the current odometry position using 
         // the odometry computer's IMU by default (it seems to be more consistent than the on-board IMU)
-        getPosition().getHeading(AngleUnit.DEGREES);
+        return getPosition().getHeading(AngleUnit.DEGREES);
     }
 
     public synchronized double getVoltage()

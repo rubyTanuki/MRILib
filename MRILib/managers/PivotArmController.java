@@ -3,6 +3,10 @@ package MRILib.managers;
 import MRILib.managers.*;
 import static MRILib.BotValues.*;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class PivotArmController implements Runnable{
     private ArmBotFF bot;
@@ -33,7 +37,7 @@ public class PivotArmController implements Runnable{
     public void run(){
         long loopTime = 10;
         long nextLoopTime = System.nanoTime() + loopTime * 1_000_000;
-        ElapsedTime timer = new ElaspedTime();
+        ElapsedTime timer = new ElapsedTime();
         double previousTime = timer.seconds();
         
         
@@ -78,7 +82,7 @@ public class PivotArmController implements Runnable{
         double powerValue = (1.0/voltage)*clampMulti;
 
         //apply power value to motor
-        bot.setPivot(powerValue);
+        bot.setPivotPower(powerValue);
     }
 
     public synchronized void updateCurrentState(double armPos, double velocity){
