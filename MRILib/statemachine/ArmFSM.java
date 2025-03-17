@@ -18,11 +18,14 @@
  * to see an example of the intended usage of this class, see MRILib.opmodes.AutonExample
  */
 
-
+// 3/15/25 added conditionals -Avery Brown
+ 
 package MRILib.statemachine;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 import java.util.HashMap;
+import java.util.function.Supplier;
+
 import MRILib.managers.*;
 
 
@@ -33,6 +36,9 @@ public class ArmFSM
 
     //currently active state
     private ArmState currentState; 
+
+    //private HashMap<Supplier<Boolean>, Runnable> conditionals = new HashMap<>();
+    private ArrayList<Conditional> conditionalList = new ArrayList<>();
 
     //gamepads
     Gamepad gpad1;
@@ -97,6 +103,21 @@ public class ArmFSM
             if(transitions.get(targetState)){
                 setState(targetState);
                 break;
+            }
+        }
+    }
+
+    public void addConditional(Supplier<Boolean> condition, Runnable command)
+    { // adding a conditional to the list to be checked each loop until successful
+        conditionalList.add(new Conditional(condition, command));
+    }
+
+    public void checkConditionals()
+    { // parsing all currently saved conditional statements and removing them once called
+        for(Conditional cond : conditionalList){
+            if(cond.condition.get()){
+                cond.command.run();
+                conditionalList.remove(conditionalList.indexOf(cond));
             }
         }
     }
@@ -177,6 +198,16 @@ class ArmState extends BotState{
     }
     public HashMap<String, Boolean> getTransitions(){
         return transitions;
+    }
+}
+
+class Conditional{
+    public Supplier<Boolean> condition;
+    public Runnable command;
+
+    public Conditional(Supplier<Boolean> condition, Runnable command){
+        this.condition = condition;
+        this.command = command;
     }
 }
 
