@@ -1,7 +1,7 @@
 # MRILib
 
 **Modular Robotics Infrastructure Library** for FTC  
-A flexible, powerful Java library for creating clean, abstracted, and reusable robot code for TeleOp and Autonomous modes in FTC.
+A flexible, simple Java library for creating clean, abstracted, and reusable robot code for TeleOp and Autonomous modes in FTC.
 
 ---
 
@@ -14,8 +14,9 @@ It provides:
 - A layered robot class system (`Bot`, `ArmBot`, `AutoBot`) to manage all subsystems
 - Extensible state machines for both autonomous and TeleOp
 - A refined `DebouncedGamepad` for smooth, safe input handling
-- Advanced PID-based motion control using `PIDController`
+- Smooth PID-based motion control using `PIDController`
 - Clean abstractions for drive control, arms, and sensor integrations
+- Complex Feed-Forward Motion Profile pivoting arm control
 
 ---
 
@@ -27,14 +28,15 @@ It provides:
 - `AutoBot`: Extends `ArmBot` with vision and sensor processing
 - These classes encapsulate both **initialization** and **processing** logic for their respective subsystems.
 
-### 🤖 State Machines
-- `DriveFSM`: Controls sequential drive tasks during Autonomous
+### 🤖 State Machines (`statemachine/`)
+- `DriveFSM`: Controls sequential drive tasks and ArmFSM calls during Autonomous
 - `ArmFSM`: Manages states of the arm during both TeleOp and Auto
 - `BotState`: Base class for state machine steps
 - Includes private subclassing of `BotState` in `ArmFSM` for encapsulated arm logic
 
 ### 🧠 Motion Control (`motion/`)
-- `PIDCoefficients`: Simple container for P, I, D values
+- `PID`: Helper Class to calculate a single vector PID control
+- `HeadingPID`: PID Control class for specifically anglewrapped Odometry Heading
 - `PIDController`: 2D motion profiling with `x`, `y`, and `theta` components
 - Used by `DriveFSM` to execute smooth, accurate motion steps
 
