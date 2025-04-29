@@ -1,7 +1,7 @@
 # MRILib
 FTC Robotics Library made for and by the Marcus Robotics Institute
 
-docs: https://rubytanuki.github.io/MRILib/index.html
+docs: https://rubytanuki.github.io/MRILib
 
 ## WARNING: IN DEVELOPMENT
 There are still a lot of compile errors and stuff, so this version isnt copy and paste ready. All the logic is there though, so any issues should be pretty easy to fix.
