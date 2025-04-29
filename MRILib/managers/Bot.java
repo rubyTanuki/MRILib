@@ -1,6 +1,7 @@
 package MRILib.managers;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -15,104 +16,169 @@ import MRILib.util.GoBildaPinpointDriver;
 import static MRILib.BotValues.*;
 
 
-/*
- * This file contains the initialization of the drive train motors, imu, 
- * odometry computer, and voltage sensor
- * as well as all getter, setter, and helper methods for any related values
+/**
+ * <b>Controls drive train movements and member handling</b>
  * 
- * It is a superclass for ArmBot, which implements the same helper methods but for
- * any arm and game unique motors, servos, and sensors
- * 
- * While the ArmBot class and its subclasses need to be different for every individual robot,
- * this class should not change besides a few initialization parameters
- * 
- * This file is specifically illustrates the manager and initialization class for a
+ * <p>This file is specifically illustrates the manager and initialization class for a
  * 4-motor Omni-Directional (or Holonomic) Drive-train using GoBilda Mechanum wheels and the
  * GoBilda Pinpoint Odometry Computer I2C device. It can be easily modified, however, to instead utilize a 
  * custom odometry class using wheel encoders or a 3 dead-wheel odometry system by switching out the odo
  * variable and making sure all the method names line up between the calls on this file and the 
  * names on your odometry file.
+ * 
+ * <p>This is a superclass for ArmBot, which implements the same helper methods but for
+ * any arm and game unique motors, servos, and sensors.
+ * While the ArmBot class and its subclasses need to be different for every individual robot,
+ * this class should not change besides a few initialization parameters
+ * 
+ * 
+ * @author Avery
+ * @version 1.0
+ * 
  */
 
 public class Bot{
 
-    //creating motor variables to be initialized in initMotors()
+    /** The front left drive motor */
     private DcMotorEx frontLeft;
+    /** The back left drive motor */
     private DcMotorEx backLeft;
+    /** The front right drive motor */
     private DcMotorEx frontRight;
+    /** The back right drive motor */
     private DcMotorEx backRight;
     
-    //creating odometry computer to be initialized in initOdo()
+    /** The Gobilda Pinpoint Odometry Computer */
     public GoBildaPinpointDriver odo;
 
-    //creating on-board IMU to be initialized in initIMU()
+    /** The Control Hub IMU */
     public IMU imu;
 
-    //creating voltage sensor object
+    /** The Control Hub Voltage Sensor  */
     private VoltageSensor voltageSensor;
 
-    //current and last position, calculated by the odometry computer
+    /** The current position relative to the center of the field */
     private Pose2D currentPosition;
+    /** The position relative to the center of the field from the previous loop */
     private Pose2D lastPosition;
     
-    //current motor positions
+    /** The OpMode's Telemetry */
+    private Telemetry telemetry;
+    
+    
     int frontLeftPos  = 0;
     int frontRightPos = 0;
     int backLeftPos   = 0;
     int backRightPos  = 0;
 
-    //previous motor positions
     int frontLeftPosPrev  = 0;
     int frontRightPosPrev = 0;
     int backLeftPosPrev   = 0;
     int backRightPosPrev  = 0;
 
-    public Bot(HardwareMap hm)
+    /**
+     * Initializes the Drive-Train hardware.
+     * 
+     * @param HardwareMap from OpMode
+     * @param Telemetry from OpMode
+     * 
+     * Calls initMotors, initIMU, and initOdo
+     * @see initMotors(HardwareMap hm)
+     * @see initIMU(HardwareMap hm)
+     * @see initOdo(HardwareMap hm)
+     */
+
+    public Bot(HardwareMap hm, Telemetry telemetry)
     { //constructor
+        this.telemetry = telemetry;
+        voltageSensor = hm.voltageSensor.iterator().next();
         initMotors(hm);
         initIMU(hm);
         initOdo(hm);
-        voltageSensor = hm.voltageSensor.iterator().next();
     }
 
-    private void initMotors(HardwareMap hm)
+
+    /**
+     * Initializes the motors with default hardwareMap names.
+     * @param hm OpMode's HardwareMap
+     * @see initMotors(HardwareMap hm, String fl, String fr, String bl, String br)
+     */
+    private void initMotors(HardwareMap hm){
+        initMotors(hm, "frontLeft", "frontRight", "backLeft", "backRight");
+    }
+    /**
+     * Initializes the motors with specified hardwareMap names and calls setDirections.
+     * @param hm OpMode's HardwareMap
+     * @param fl Front left drive motor name in config file
+     * @param fr Front right drive motor name in config file
+     * @param bl Back left drive motor name in config file
+     * @param br Back right drive motor name in config file
+     */
+    private void initMotors(HardwareMap hm, String fl, String fr, String bl, String br)
     { //initializing drive motors
-        frontLeft = hm.get(DcMotorEx.class, "frontLeft");
-        frontRight = hm.get(DcMotorEx.class, "frontRight");
-        backLeft = hm.get(DcMotorEx.class, "backLeft");
-        backRight = hm.get(DcMotorEx.class, "backRight");
+        frontLeft = hm.get(DcMotorEx.class, fl);
+        frontRight = hm.get(DcMotorEx.class, fr);
+        backLeft = hm.get(DcMotorEx.class, bl);
+        backRight = hm.get(DcMotorEx.class, br);
 
         //setting the direction of the motors so all go forward when set to positive power
         setDirections();
     }
 
-    public void initIMU(HardwareMap hardwareMap)
+    /**
+     * Calls initIMU with a default hardwareMap name.
+     * @param hm OpMode's HardwareMap
+     * @see initIMU(HardwareMap hm, String name)
+     */
+    public void initIMU(HardwareMap hm){
+        initIMU(hm, "imu");
+    }
+    /**
+     * Initializes the Control Hub's IMU with a specified hardwareMap name and IMU parameters described in BotValues.
+     * @param hm OpMode's HardwareMap
+     * @param name The name of the IMU in the config file
+     */
+    public void initIMU(HardwareMap hm, String name)
     { //initializing on board IMU
 
         //initializing the imu object using the hardwareMap from your OpMode
-        imu = hardwareMap.get(IMU.class, "imu");
+        imu = hm.get(IMU.class, "imu");
 
-        // setting up the orientation of the control hub on the robot in order to
-        // properly calculate the yaw, pitch, and roll of the robot using the gyroscope
-        // first parameter takes a LogoFacingDirection enum value and the second parameter
-        // takes a UsbFacingDirection value
+       /*
+        * setting up the orientation of the control hub on the robot in order to
+        * properly calculate the yaw, pitch, and roll of the robot using the gyroscope
+        * first parameter takes a LogoFacingDirection enum value and the second parameter
+        * takes a UsbFacingDirection value
+        */
 
         //example: 
         //  new RevHubOrientationOnRobot(LogoFacingDirection.LEFT, UsbFacingDirection.UP)
         IMU.Parameters params = new IMU.Parameters(
-            new RevHubOrientationOnRobot(LOGO_DIR, USB_DIR));
+            new RevHubOrientationOnRobot(LOGO_DIR, USB_DIR)); //set in BotValues
 
         //initializing the imu with the specified orientation parameters
         imu.initialize(params);
     }
 
-    public void initOdo(HardwareMap hardwareMap)
-    { //initialize odometry
-
+    /**
+     * Initializing the Gobilda Pinpoint Odometry Computer with a default name
+     * @param hm OpMode's HardwareMap
+     * @see initOdo(HardwareMap hm, String name)
+     */
+    public void initOdo(HardwareMap hm){
+        initOdo(hm, "odo");
+    }
+    /**
+     * 
+     * @param hm OpMode's HardwareMap
+     * @param name The name of the pinpoint computer in the config file
+     */
+    public void initOdo(HardwareMap hm, String name)
+    {
         //initializing the odometry object using the hardwareMap from your OpMode
-        odo = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
+        odo = hm.get(GoBildaPinpointDriver.class,name);
 
-        // setting the init parameters of the two odometry wheels 
+        // setting the init parameters of the two odometry wheels
         // for refrence of how to determine these parameters, look to "ComputeOdo.java" in .util
         odo.setOffsets(96.0, 75.0);
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
@@ -123,6 +189,10 @@ public class Bot{
         odo.resetPosAndIMU();
     }
 
+    /**
+     * Updating robot position and encoder ticks in each opMode loop tick
+     * Should be called in the while(OpModeIsActive()) loop in the OpMode
+     */
     public void update(){
         //update robot position and encoder ticks in each opMode loop tick
         odo.update();
@@ -131,6 +201,11 @@ public class Bot{
         updateEncoders();
     }
 
+    /**
+     * Updating robot drive-train encoder ticks
+     * Called by update()
+     * @see update()
+     */
     public void updateEncoders()
     { //updating current position numbers
 
@@ -149,10 +224,13 @@ public class Bot{
 
     
 
-    //getter methods
+    /** @return frontLeft */
     public DcMotorEx getFL(){ return frontLeft;     }
+    /** @return frontRight */
     public DcMotorEx getFR(){ return frontRight;    }
+    /** @return backLeft */
     public DcMotorEx getBL(){ return backLeft;      }
+    /** @return backRight */
     public DcMotorEx getBR(){ return backRight;     }
     public int getFLPos(){ return frontLeftPos;  }
     public int getFRPos(){ return frontRightPos; }
@@ -166,8 +244,12 @@ public class Bot{
     public double getIMUHeading(){ return -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);}
     public void resetIMUHeading(){ imu.resetYaw(); }
     
+    /** 
+     * Returns the current position tracked by the odometry computer
+     * @return current position
+     */
     public Pose2D getPosition(){
-        // returning the current odometry position output by the odometry computer
+        
         return currentPosition;
     }
     public Pose2D getLastPosition(){
@@ -197,6 +279,10 @@ public class Bot{
     public synchronized double getVoltage()
     { // returning the current output voltage from the battery to the control hub
         return voltageSensor.getVoltage();
+    }
+    
+    public Telemetry getTelemetry(){
+        return telemetry;
     }
     
 
@@ -303,6 +389,14 @@ public class Bot{
         backRight.setPower(rbPower);
     }
     
+    /**
+     * 
+     * @param fx
+     * @param fy
+     * @param fw
+     * @param rot
+     * 
+     */
     public void driveFieldXYW(double fx, double fy, double fw, double rot)
     { // rotate field orientation inputs to robot orientation
 
