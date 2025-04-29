@@ -7,7 +7,7 @@ public class BotValues{
     public static DcMotor.Direction LEFTDIR = DcMotor.Direction.FORWARD;
     public static DcMotor.Direction RIGHTDIR = DcMotor.Direction.REVERSE;
     public static DcMotor.Direction SLIDEDIR = DcMotor.Direction.FORWARD;
-    public static DcMotor.Direction PIVOTDIR = DcMotor.Direction.REVERSE;
+    public static DcMotor.Direction PIVOTDIR = DcMotor.Direction.FORWARD;
     public static LogoFacingDirection LOGO_DIR = LogoFacingDirection.UP;
     public static UsbFacingDirection USB_DIR = UsbFacingDirection.LEFT;
 
@@ -26,6 +26,6 @@ public class BotValues{
     public static final DcMotor.ZeroPowerBehavior FLOAT = DcMotor.ZeroPowerBehavior.FLOAT;
 
     public static final double TICKS_PER_REVOLUTION_ARM = 384.5;
-    public static final double GEAR_RATIO_ARM = 6.0;
+    public static final double GEAR_RATIO_ARM = 1.0;
     public static final double TICKS_PER_DEGREE_ARM = TICKS_PER_REVOLUTION_ARM/(GEAR_RATIO_ARM*360);
 }
