@@ -4,9 +4,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class PID {
 
-    final double kP; // software defined spring pulling toward target
-    final double kI; // force away from repeated motion (anti wobble)
-    final double kD; // software defined dampener pushing away from target
+    public double kP; // software defined spring pulling toward target
+    public double kI; // force away from repeated motion (anti wobble)
+    public double kD; // software defined dampener pushing away from target
     public double iLimit = 1;
 
     public double targetVal = 0;
@@ -55,6 +55,10 @@ public class PID {
         lastError = error;
         
         return value;
+    }
+    
+    public double update(double current1, double current2){
+        return (Math.abs(current1-targetVal) < Math.abs(current2-targetVal)?update(current1):update(current2));
     }
     
     public void setTarget(double target){
