@@ -1,6 +1,7 @@
 # MRILib
 
-**Docs: ** https://rubytanuki.github.io/MRILib
+Docs: https://rubytanuki.github.io/MRILib
+
 **Modular Robotics Infrastructure Library** for FTC  
 A flexible, simple Java library for creating clean, abstracted, and reusable robot code for TeleOp and Autonomous modes in FTC.
 
